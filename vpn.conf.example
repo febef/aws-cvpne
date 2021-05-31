@@ -2,12 +2,17 @@
 # replace with one from AWS VPN
 client
 dev tun
-proto tcp
+proto udp
+remote 
+remote-random-hostname
 nobind
 persist-key
 persist-tun
 remote-cert-tls server
 cipher AES-256-GCM
+verb 3
+<ca>
+M
 <ca>
 FIXME ADD YOUR CA CHAIN HERE
 </ca>

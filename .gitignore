@@ -1,0 +1,6 @@
+.env
+/openvpn/*
+
+*.conf
+
+server-cvpn-sso

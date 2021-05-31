@@ -1,14 +1,14 @@
 #!/bin/bash
 
 set -e
-
+. .env
 # replace with your hostname
-VPN_HOST="cvpn-endpoint-<id>.prod.clientvpn.us-east-1.amazonaws.com"
+VPN_HOST="${CVPN_ID}.prod.clientvpn.us-east-1.amazonaws.com"
 # path to the patched openvpn
-OVPN_BIN="./openvpn"
+OVPN_BIN="./openvpn/openvpn-2.5.2-patch"
 # path to the configuration file
 OVPN_CONF="vpn.conf"
-PORT=1194
+PORT=443
 PROTO=udp
 
 wait_file() {
@@ -17,6 +17,10 @@ wait_file() {
   until test $((wait_seconds--)) -eq 0 -o -f "$file" ; do sleep 1; done
   ((++wait_seconds))
 }
+
+# Start sso server
+echo "Starting Single-Sing-On Server"
+./server-cvpn-sso &
 
 # create random hostname prefix for the vpn gw
 RAND=$(openssl rand -hex 12)
@@ -50,6 +54,10 @@ wait_file "saml-response.txt" 30 || {
 
 # get SID from the reply
 VPN_SID=$(echo "$OVPN_OUT" | awk -F : '{print $7}')
+
+# end Single-Sing-On server
+echo "Terminating SSO server."
+killall server-cvpn-sso
 
 echo "Running OpenVPN with sudo. Enter password if requested"
 
