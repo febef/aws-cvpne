@@ -3,7 +3,7 @@
 This is PoC to connect to the AWS Client VPN with OSS OpenVPN using SAML
 authentication. Tested on macOS and Linux, should also work on other POSIX OS with a minor changes.
 
-See [my blog post](https://smallhacks.wordpress.com/2020/07/08/aws-client-vpn-internals/) for the implementation details.
+See [blog post](https://smallhacks.wordpress.com/2020/07/08/aws-client-vpn-internals/) for the implementation details.
 
 ## Content of the repository
 
@@ -14,8 +14,20 @@ AWS compatible OpenVPN v2.4.9, based on the
 SAML Post data to the file
 - [aws-connect.sh](aws-connect.sh) - bash wrapper to run OpenVPN. It runs OpenVPN first time to get SAML Redirect and open browser and second time with actual SAML response
 
++++++
+- The patch for version 2.5.2 was added, which is the same as 2.5.1, and a script to compile this last version, and the sso server.
+- The aws-connect script was also modified so that it raises the sso server and kills it when it is finished using it.
+- Finally, the port was modified to 443 since it is the one that worked in my config and a file '.env' was displayed for the id of the aws client endpoint vpn
+
++++++
 ## How to use
 
+1. For build binaries run [build-openvpn.sh](build-openvpn.sh)
+1. Setup your `.env` with your `CVPN_ID` as ref [.env.example](.env.example)
+1. Add your `vpn.conf` as ref [vpn.conf.example](vpn.conf.example)
+1. Run [aws-connect.sh](aws-connect.sh) for connect
+
+### the old way
 1. Build patched openvpn version and put it to the folder with a script
 1. Start HTTP server with `go run server.go`
 1. Set VPN_HOST in the [aws-connect.sh](aws-connect.sh)
