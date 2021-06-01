@@ -22,10 +22,12 @@ SAML Post data to the file
 +++++
 ## How to use
 
-1. For build binaries run [build-openvpn.sh](build-openvpn.sh)
-1. Setup your `.env` with your `CVPN_ID` as ref [.env.example](.env.example)
-1. Add your `vpn.conf` as ref [vpn.conf.example](vpn.conf.example)
-1. Run [aws-connect.sh](aws-connect.sh) for connect
+1. Build: Run [build-openvpn.sh](build-openvpn.sh)
+1. Configure:
+     1. Setup your `.env` with your `CVPN_ID` as ref [.env.example](.env.example)
+     1. Add your `vpn.conf` as ref [vpn.conf.example](vpn.conf.example)
+     1. Add the [aws.cacert](aws.cacert) first to <ca> section on your `vpn.conf`
+1. Connect: Run [aws-connect.sh](aws-connect.sh)
 
 ### the old way
 1. Build patched openvpn version and put it to the folder with a script
@@ -38,8 +40,9 @@ SAML Post data to the file
 
 Inspect your ovpn config and remove the following lines if present
 - `auth-user-pass` (we dont want to show user prompt)
-- `auth-federate` (do not retry on failures)
-- `auth-retry interact` (propietary AWS keyword)
+- `auth-federate` (propietary AWS keyword)
+- `auth-retry interact` 
+- `resolv-retry infinite` (do not retry on failures)
 - `remote` and `remote-random-hostname` (already handled in CLI and can cause conflicts with it)
 
 ## Todo
