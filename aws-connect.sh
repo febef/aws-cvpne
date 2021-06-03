@@ -63,9 +63,17 @@ echo "Running OpenVPN with sudo. Enter password if requested"
 
 # Finally OpenVPN with a SAML response we got
 # Delete saml-response.txt after connect
+
+DNS_SETUP=""
+if [ $DNS != "none" ]; then
+DNS_SETUP= "--down ./remove-DNS.sh \
+  --up ./add-DNS.sh" 
+fi
+
 sudo bash -c "$OVPN_BIN --config "${OVPN_CONF}" \
-    --verb 3 --auth-nocache --inactive 3600 \
-    --proto "$PROTO" --remote $SRV $PORT \
-    --script-security 2 \
-    --route-up '/bin/rm saml-response.txt' \
-    --auth-user-pass <( printf \"%s\n%s\n\" \"N/A\" \"CRV1::${VPN_SID}::$(cat saml-response.txt)\" )"
+  --verb 3 --auth-nocache --inactive 3600 \
+  --proto "$PROTO" --remote $SRV $PORT \
+  --script-security 2 \
+  --route-up '/bin/rm saml-response.txt' \
+  --auth-user-pass <( printf \"%s\n%s\n\" \"N/A\" \"CRV1::${VPN_SID}::$(cat saml-response.txt)\" ) \
+  $DNS_SETUP"
