@@ -17,6 +17,7 @@ SAML Post data to the file
 +++++
 - The patch for version 2.5.2 was added, which is the same as 2.5.1, and a script to compile this last version, and the sso server.
 - The aws-connect script was also modified so that it raises the sso server and kills it when it is finished using it.
+- The DNS configuration scripts was added for setup DNS server ip of the vpn.
 - Finally, the port was modified to 443 since it is the one that worked in my config and a file '.env' was displayed for the id of the aws client endpoint vpn
 
 +++++
@@ -24,7 +25,7 @@ SAML Post data to the file
 
 1. Build: Run [build-openvpn.sh](build-openvpn.sh)
 1. Configure:
-     1. Setup your `.env` with your `CVPN_ID` as ref [.env.example](.env.example)
+     1. Setup your `.env` with your `CVPN_ID` as ref [.env.example](.env.example) and optionally the DNS resolver ip
      1. Add your `vpn.conf` as ref [vpn.conf.example](vpn.conf.example)
      1. Add the [aws.cacert](aws.cacert) first to <ca> section on your `vpn.conf`
 1. Connect: Run [aws-connect.sh](aws-connect.sh)
