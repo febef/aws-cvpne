@@ -3,13 +3,15 @@
 set -e
 . .env
 # replace with your hostname
-VPN_HOST="${CVPN_ID}.prod.clientvpn.us-east-1.amazonaws.com"
+VPN_HOST="${CVPN_ID}"
 # path to the patched openvpn
 OVPN_BIN="./openvpn/openvpn-2.5.2-patch"
 # path to the configuration file
 OVPN_CONF="vpn.conf"
 PORT=443
 PROTO=udp
+
+root=`pwd`
 
 wait_file() {
   local file="$1"; shift
@@ -20,7 +22,7 @@ wait_file() {
 
 # Start sso server
 echo "Starting Single-Sing-On Server"
-./server-cvpn-sso &
+$root/server-cvpn-sso &
 
 # create random hostname prefix for the vpn gw
 RAND=$(openssl rand -hex 12)
@@ -66,8 +68,7 @@ echo "Running OpenVPN with sudo. Enter password if requested"
 
 DNS_SETUP=""
 if [ $DNS != "none" ]; then
-DNS_SETUP= "--down ./remove-DNS.sh \
-  --up ./add-DNS.sh" 
+  DNS_SETUP="--down $root/remove-DNS.sh --up $root/add-DNS.sh" 
 fi
 
 sudo bash -c "$OVPN_BIN --config "${OVPN_CONF}" \
