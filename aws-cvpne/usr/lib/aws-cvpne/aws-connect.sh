@@ -2,7 +2,7 @@
 
 set -e
 root="/usr/lib/aws-cvpne"
-OVPN_BIN="$root/openvpn-v2.5.2-patch"
+OVPN_BIN="$root/openvpn-v2.5.2-aws.patch"
 PORT=443
 PROTO=udp
 
@@ -15,6 +15,7 @@ wait_file() {
 
 # Start sso server
 echo "Starting Single-Sing-On Server"
+killall server-cvpn-sso || true
 $root/server-cvpn-sso &
 
 # create random hostname prefix for the vpn gw
@@ -24,7 +25,7 @@ RAND=$(openssl rand -hex 12)
 SRV=$(dig a +short "${RAND}.${OVPN_HOST}"|head -n1)
 
 # cleanup
-rm -f saml-response.txt
+rm -f /usr/lib/aws-cvpne/saml-response.txt
 
 echo "Getting SAML redirect URL from the AUTH_FAILED response (host: ${SRV}:${PORT})"
 OVPN_OUT=$($OVPN_BIN --config "${OVPN_CONF}" --verb 3 \
@@ -42,7 +43,7 @@ case "${unameOut}" in
     *)          echo "Could not determine 'open' command for this OS"; exit 1;;
 esac
 
-wait_file "saml-response.txt" 30 || {
+wait_file "/usr/lib/aws-cvpne/saml-response.txt" 30 || {
   echo "SAML Authentication time out"
   exit 1
 }
@@ -52,22 +53,23 @@ VPN_SID=$(echo "$OVPN_OUT" | awk -F : '{print $7}')
 
 # end Single-Sing-On server
 echo "Terminating SSO server."
-killall server-cvpn-sso
+killall server-cvpn-sso || true
 
 echo "Running OpenVPN with sudo. Enter password if requested"
 
 # Finally OpenVPN with a SAML response we got
 # Delete saml-response.txt after connect
 
+sleep 2s
 DNS_SETUP=""
-if [ $DNS != "none" ]; then
-  DNS_SETUP="--down $root/remove-DNS.sh --up $root/add-DNS.sh" 
+if [ "$1" != "none" ]; then
+  export DNS="$1"
+  DNS_SETUP="--down \"$root/remove-DNS.sh '$DNS'\" --up \"$root/add-DNS.sh '$DNS'\"" 
 fi
-
 sudo bash -c "$OVPN_BIN --config "${OVPN_CONF}" \
   --verb 3 --auth-nocache --inactive 3600 \
   --proto "$PROTO" --remote $SRV $PORT \
   --script-security 2 \
   --route-up '/bin/rm saml-response.txt' \
-  --auth-user-pass <( printf \"%s\n%s\n\" \"N/A\" \"CRV1::${VPN_SID}::$(cat saml-response.txt)\" ) \
+  --auth-user-pass <( printf \"%s\n%s\n\" \"N/A\" \"CRV1::${VPN_SID}::$(cat /usr/lib/aws-cvpne/saml-response.txt)\" ) \
   $DNS_SETUP"

@@ -1,4 +1,5 @@
 #!/bin/bash
+DNS=$1
 echo "$(date +'%Y-%m-%d %H:%m:%S') Setting-up-dns to $DNS"
 
 grep "nameserver $DNS" /etc/resolv.conf > /dev/null

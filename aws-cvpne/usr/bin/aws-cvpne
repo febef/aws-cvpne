@@ -3,14 +3,16 @@
 root="/usr/bin"
 DEFAULT_CONFIG_FILE="$HOME/.aws-cvpne.config"
 LIVE_CONFIG="$HOME/.aws-cvpne.live.config"
+DNS_="none"
 
 function helpmenu() {
   echo -e "\nHELP!\n"
 }
 
-while getopts c:h:j flag ; do
+while getopts c:h:r:j flag ; do
   case "${flag}" in
     c)  CONFIG_FILE=${OPTARG} ;;
+    r)  DNS_=${OPTARG} ;;
     h)  helpmenu ; exit 0 ;;
     *)  helpmenu ; exit 1 ;;
   esac
@@ -51,11 +53,10 @@ function procesConfig() {
 function getValues() {
   export OVPN_HOST=`cat $LIVE_CONFIG | grep cvpn | cut -d" " -f2`
   export OVPN_CONF="$LIVE_CONFIG"
-  #export DNS=10.21.0.2
 }
 
 function connectVPN() {
-  /usr/lib/aws-cvpne/aws-connect.sh
+  /usr/lib/aws-cvpne/aws-connect.sh "$DNS_"
 }
 
 init;
