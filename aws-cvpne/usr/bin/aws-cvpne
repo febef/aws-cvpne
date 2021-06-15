@@ -1,0 +1,61 @@
+#!/bin/bash -x
+
+root="/usr/bin"
+DEFAULT_CONFIG_FILE="$HOME/.aws-cvpne.config"
+LIVE_CONFIG="$HOME/.aws-cvpne.live.config"
+
+function helpmenu() {
+  echo -e "\nHELP!\n"
+}
+
+while getopts c:h:j flag ; do
+  case "${flag}" in
+    c)  CONFIG_FILE=${OPTARG} ;;
+    h)  helpmenu ; exit 0 ;;
+    *)  helpmenu ; exit 1 ;;
+  esac
+done
+
+function init() {
+  verifyConfig;
+  procesConfig;
+  getValues;
+  connectVPN;
+  rm "$LIVE_CONFIG" || true;
+}
+
+function verifyConfig() {
+  #si no pasa el parametro de config se usa el por defecto
+  ([ "$CONFIG_FILE" == "" ]) && { CONFIG_FILE=$DEFAULT_CONFIG_FILE ; }
+  # si este no existe manda mensaje, notificando.
+  ([ -f "$CONFIG_FILE" ]) || { echo "El archivo de configuración no se encuentra."; exit 1; }
+  # si el archivo de config no es el por defecto lo resguarda.
+  ([ "$CONFIG_FILE" == "$DEFAULT_CONFIG_FILE" ]) || { cp "$CONFIG_FILE" "$DEFAULT_CONFIG_FILE"; }
+}
+
+function procesConfig() {
+  AWSCERT=`sed -e ':begin;$!N;s/\n/<newline>/;tbegin' /usr/lib/aws-cvpne/aws.cacert`
+
+  cat $CONFIG_FILE \
+    | sed "/resolv-retry infinite/d" \
+    | sed "/auth-user-pass/d" \
+    | sed "/auth-federate/d" \
+    | sed "/auth-retry interact/d" \
+    | sed ':begin;$!N;s/\n/<newline>/;tbegin' \
+    | sed "s;<ca>;<ca><newline>${AWSCERT};g" \
+    | sed "s;<newline>;\n;g" \
+    > $LIVE_CONFIG
+
+}
+
+function getValues() {
+  export OVPN_HOST=`cat $LIVE_CONFIG | grep cvpn | cut -d" " -f2`
+  export OVPN_CONF="$LIVE_CONFIG"
+  #export DNS=10.21.0.2
+}
+
+function connectVPN() {
+  /usr/lib/aws-cvpne/aws-connect.sh
+}
+
+init;

@@ -1,0 +1,11 @@
+thubSource: aws-cvpne
+Section: devel
+Priority: optional
+Maintainer: febef.dev <febef.dev@gmail.com>
+Uploaders: febef.dev <febef.dev@gmail.com>
+Standards-Version: 0.1.0
+Version: 0.1.0
+Package: aws-cvpne
+Architecture: amd64
+Description: AWS Client VPN Endpoint
+Depends: dnsutils, sed, grep, bash
