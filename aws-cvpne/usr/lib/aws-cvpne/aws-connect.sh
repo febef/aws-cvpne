@@ -1,14 +1,8 @@
-#!/bin/bash -x
+#!/bin/bash
 
 set -e
 root="/usr/lib/aws-cvpne"
-#. .env
-# replace with your hostname
-#OVPN_HOST="${CVPN_ID}"
-# path to the patched openvpn
 OVPN_BIN="$root/openvpn-2.5.2-patch"
-# path to the configuration file
-#OVPN_CONF="vpn.conf"
 PORT=443
 PROTO=udp
 

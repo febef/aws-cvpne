@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 root="/usr/bin"
 DEFAULT_CONFIG_FILE="$HOME/.aws-cvpne.config"

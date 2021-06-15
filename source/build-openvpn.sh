@@ -1,6 +1,5 @@
 #/bin/bash
-rm -rf openvpn || true
-rm server-cvpn-sso || true
+rm -rf openvpn server-cvpn-sso || true
 
 mkdir -p openvpn
 
