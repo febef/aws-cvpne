@@ -1,6 +1,15 @@
 #!/bin/bash
 
 set -e
+
+#if ([ "$2" != "true" ]); then
+#  OUT="/dev/null"
+#else
+OUT="/var/log/aws-cvpne_$(date +'%Y-%m-%d_%H-%m-%S')_connection.log"
+#sudo touch $OUT
+#sudo /usr/bin/chmod 777 $OUT
+#fi
+
 root="/usr/lib/aws-cvpne"
 OVPN_BIN="$root/openvpn-v2.5.2-aws.patch"
 PORT=443
@@ -15,7 +24,7 @@ wait_file() {
 
 # Start sso server
 echo "Starting Single-Sing-On Server"
-killall server-cvpn-sso || true
+killall server-cvpn-sso &> /dev/null || true
 $root/server-cvpn-sso &
 
 # create random hostname prefix for the vpn gw
@@ -53,23 +62,32 @@ VPN_SID=$(echo "$OVPN_OUT" | awk -F : '{print $7}')
 
 # end Single-Sing-On server
 echo "Terminating SSO server."
-killall server-cvpn-sso || true
+killall server-cvpn-sso &> /dev/null || true
 
 echo "Running OpenVPN with sudo. Enter password if requested"
 
 # Finally OpenVPN with a SAML response we got
 # Delete saml-response.txt after connect
 
-sleep 2s
 DNS_SETUP=""
 if [ "$1" != "none" ]; then
   export DNS="$1"
   DNS_SETUP="--down \"$root/remove-DNS.sh '$DNS'\" --up \"$root/add-DNS.sh '$DNS'\"" 
 fi
-sudo bash -c "$OVPN_BIN --config "${OVPN_CONF}" \
-  --verb 3 --auth-nocache --inactive 3600 \
-  --proto "$PROTO" --remote $SRV $PORT \
-  --script-security 2 \
-  --route-up '/bin/rm saml-response.txt' \
-  --auth-user-pass <( printf \"%s\n%s\n\" \"N/A\" \"CRV1::${VPN_SID}::$(cat /usr/lib/aws-cvpne/saml-response.txt)\" ) \
-  $DNS_SETUP"
+
+elapsedTime=0
+
+while (( $elapsedTime < 10 )); do
+  startTime=$(date +%s)
+
+  sudo bash -c "$OVPN_BIN --config "${OVPN_CONF}" \
+    --verb 3 --auth-nocache --inactive 3600 \
+    --proto "$PROTO" --remote $SRV $PORT \
+    --script-security 2 \
+    --route-up '/bin/rm /usr/lib/aws-cvpne/saml-response.txt' \
+    --auth-user-pass <( printf \"%s\n%s\n\" \"N/A\" \"CRV1::${VPN_SID}::$(cat /usr/lib/aws-cvpne/saml-response.txt)\" ) \
+    $DNS_SETUP"
+
+  elapsedTime="$(($(date +%s) - ${startTime}))"
+
+done
