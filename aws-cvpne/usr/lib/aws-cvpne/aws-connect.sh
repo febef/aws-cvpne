@@ -2,7 +2,7 @@
 
 set -e
 root="/usr/lib/aws-cvpne"
-OVPN_BIN="$root/openvpn-2.5.2-patch"
+OVPN_BIN="$root/openvpn-v2.5.2-patch"
 PORT=443
 PROTO=udp
 
