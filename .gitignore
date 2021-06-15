@@ -1,8 +1,9 @@
 
-./aws-cvpne/usr/lib/aws-cvpne/openvpn-v2.5.2-aws.patch
-./aws-cvpne/usr/lib/aws-cvpne/server-cvpn-sso
+aws-cvpne/usr/lib/aws-cvpne/openvpn-v2.5.2-aws.patch
+aws-cvpne/usr/lib/aws-cvpne/server-cvpn-sso
 
-./source/openvpn
-./source/openvpn-v2.5.2-aws.patch
-./source/server-cvpn-sso
+source/openvpn
+source/openvpn-v2.5.2-aws.patch
+source/server-cvpn-sso
+
 *.deb
