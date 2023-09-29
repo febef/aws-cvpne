@@ -5,13 +5,18 @@ mkdir -p openvpn
 
 cd openvpn
 
-wget https://swupdate.openvpn.org/community/releases/openvpn-2.5.2.tar.gz
-tar xzvf openvpn-2.5.2.tar.gz > /dev/null
 
-cd openvpn-2.5.2
+
+#wget https://swupdate.openvpn.org/community/releases/openvpn-2.5.2.tar.gz
+#tar xzvf openvpn-2.5.2.tar.gz > /dev/null
+wget https://github.com/OpenVPN/openvpn/archive/refs/tags/v2.6.6.tar.gz
+
+
+
+cd openvpn-2.6.6
 
 git init .
-git apply ../../openvpn-v2.5.2-aws.patch 
+git apply ../../openvpn-v2.6.6-aws.patch 
 
 ./configure && make 
 
