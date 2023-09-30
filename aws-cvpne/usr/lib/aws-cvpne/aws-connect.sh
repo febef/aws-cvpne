@@ -11,7 +11,7 @@ OUT="/var/log/aws-cvpne_$(date +'%Y-%m-%d_%H-%m-%S')_connection.log"
 #fi
 
 root="/usr/lib/aws-cvpne"
-OVPN_BIN="$root/openvpn-v2.5.2-aws.patch"
+OVPN_BIN="$root/openvpn-v2.5.2-aws.patched"
 PORT=443
 PROTO=udp
 

@@ -25,10 +25,10 @@ index f77685c..4ccc5d2 100644
  /* TLS control buffer minimum size
   *
 diff --git a/src/openvpn/error.h b/src/openvpn/error.h
-index 1225b13..a20ec8d 100644
+index 1225b13..7fe7816 100644
 --- a/src/openvpn/error.h
 +++ b/src/openvpn/error.h
-@@ -40,7 +40,7 @@
+@@ -40,7 +40,10 @@
  #if defined(ENABLE_PKCS11) || defined(ENABLE_MANAGEMENT)
  #define ERR_BUF_SIZE 10240
  #else
@@ -63,21 +63,19 @@ index 2eaf2f1..c65002c 100644
  
          /*
 diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index 07317a4..b094df6 100644
+index 07317a4..7fcb527 100644
 --- a/src/openvpn/manage.h
 +++ b/src/openvpn/manage.h
-@@ -58,7 +58,10 @@
+@@ -58,6 +58,9 @@
  #define MANAGEMENT_ECHO_BUFFER_SIZE           100
  #define MANAGEMENT_STATE_BUFFER_SIZE          100
  
--/*
 +#define COMMAND_LINE_OPTION_BUFFER_SIZE OPTION_PARM_SIZE
 +#define MANAGEMENT_SOCKET_READ_BUFFER_SIZE OPTION_PARM_SIZE
 +
  /*
   * Management-interface-based deferred authentication
   */
- struct man_def_auth_context {
 diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
 index b000b72..675a1b9 100644
 --- a/src/openvpn/misc.h

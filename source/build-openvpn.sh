@@ -9,12 +9,15 @@ cd openvpn
 
 #wget https://swupdate.openvpn.org/community/releases/openvpn-2.5.2.tar.gz
 #tar xzvf openvpn-2.5.2.tar.gz > /dev/null
-wget https://github.com/OpenVPN/openvpn/archive/refs/tags/v2.6.6.tar.gz
+#wget https://github.com/OpenVPN/openvpn/archive/refs/tags/v2.6.6.tar.gz
 
+wget https://swupdate.openvpn.org/community/releases/openvpn-2.6.6.tar.gz
 
+tar xzvf openvpn-2.6.6.tar.gz
 
 cd openvpn-2.6.6
 
+git config --global init.defaultBranch master
 git init .
 git apply ../../openvpn-v2.6.6-aws.patch 
 
